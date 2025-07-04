@@ -8,7 +8,7 @@ const getInfo = async (ctx: string) =>
 // Define your tool using the `createtool`
 export const yourTool = createTool({
   id: "tool-name",
-  description: "Use the `createTool function to create your tool",
+  description: "Use the `createTool` function to create your tool",
   inputSchema: z.object({
     foo: z.string().describe("Foo name"),
   }),
