@@ -6,6 +6,46 @@ const topCryptosSchema = z.object({
   sort_by: z.enum(['market_cap', 'volume', 'price_change_24h']).default('market_cap').describe('Sort criteria'),
 });
 
+// Rate limiter helper
+class RateLimiter {
+  private lastCall: number = 0;
+  private readonly minInterval: number = 6000; // 6 seconds between calls
+
+  async wait(): Promise<void> {
+    const now = Date.now();
+    const timeSinceLastCall = now - this.lastCall;
+    
+    if (timeSinceLastCall < this.minInterval) {
+      const waitTime = this.minInterval - timeSinceLastCall;
+      console.log(`Rate limiting: waiting ${waitTime}ms...`);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+    }
+    
+    this.lastCall = Date.now();
+  }
+}
+
+const rateLimiter = new RateLimiter();
+
+// Simple fetch with timeout - NO RETRY
+async function fetchWithTimeout(url: string, timeout: number = 10000): Promise<Response> {
+  await rateLimiter.wait();
+  
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    throw error;
+  }
+}
+
 export const getTopCryptos = new Tool({
   id: 'getTopCryptos',
   description: 'Get top cryptocurrencies by market cap, volume, or 24h change',
@@ -23,15 +63,22 @@ export const getTopCryptos = new Tool({
     const { limit, sort_by } = context;
     
     try {
-      const response = await fetch(
-        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=${sort_by}_desc&per_page=${limit}&page=1&sparkline=false`
+      console.log(`Fetching top ${limit} cryptos sorted by ${sort_by}...`);
+      
+      const response = await fetchWithTimeout(
+        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=${sort_by}_desc&per_page=${limit}&page=1&sparkline=false&price_change_percentage=24h`
       );
       
       if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error('Rate limited');
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       const data = await response.json();
+      
+      console.log(`Successfully fetched ${data.length} cryptocurrencies`);
       
       return data.map((coin: any) => ({
         name: coin.name,
@@ -42,9 +89,25 @@ export const getTopCryptos = new Tool({
         market_cap_rank: coin.market_cap_rank,
         total_volume: coin.total_volume,
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching top cryptocurrencies:', error);
-      throw new Error('Failed to fetch top cryptocurrencies. Please try again.');
+      
+      // RETURN a single error item instead of throwing
+      const errorMessage = error.message.includes('429') || error.message.includes('Rate limited')
+        ? 'I apologize, but I cannot fetch the current cryptocurrency data due to API rate limits. Please try again in a few minutes.'
+        : 'I apologize, but I cannot fetch the current cryptocurrency data due to API issues. Please try again later.';
+      
+      // Return an array with a single error item that matches the schema
+      return [{
+        name: 'Error',
+        symbol: 'ERROR',
+        error_message: errorMessage,
+        current_price: 0,
+        price_change_percentage_24h: 0,
+        market_cap: 0,
+        market_cap_rank: 0,
+        total_volume: 0,
+      }];
     }
   },
 });
