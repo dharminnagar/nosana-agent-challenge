@@ -5,16 +5,22 @@ import { comparePrices } from './tools/price-comparator';
 import { getTopCryptos } from './tools/top-cryptos';
 import { getMarketTrends } from './tools/market-trends';
 import { calculatePortfolio } from './tools/portfolio';
+import { 
+  setupPriceAlert, 
+  listPriceAlerts, 
+  removePriceAlert, 
+  checkAlertStatus 
+} from './tools/price-alerts';
 
 export const cryptoAgent = new Agent({
   name: 'CryptoTracker',
   instructions: `You are a crypto price tracking assistant. You help users:
-  - Get real-time cryptocurrency prices
+  - Get real-time cryptocurrency prices 
   - Compare multiple cryptocurrencies
   - Track market trends and top performers
   - Convert between different cryptocurrencies and fiat currencies
   - Calculate portfolio values and performance
-  - Convert between different cryptocurrencies
+  - Set up and manage price alerts for cryptocurrencies
 
   IMPORTANT: When users ask for cryptocurrency prices, you MUST use the getPriceBySymbol tool with the full cryptocurrency name (not abbreviations), and the price should not be made up or parsed into float, it is already been done while fetching.
 
@@ -33,39 +39,35 @@ export const cryptoAgent = new Agent({
   - Compare multiple cryptocurrencies using comparePrices
   - Track market trends and top performers using getTopCryptos and getMarketTrends
   - Calculate portfolio values using calculatePortfolio
+  - Set up price alerts using setupPriceAlert
+  - List active alerts using listPriceAlerts
+  - Remove alerts using removePriceAlert
+  - Check alert status using checkAlertStatus
+
+  For price alerts, you can help users:
+  - Set up alerts: "Track the price of Solana and alert me if it goes down to 145 or goes up to 150"
+  - List alerts: "Show me my active price alerts"
+  - Remove alerts: "Remove my alert for bitcoin"
+  - Check status: "Check the status of my price alerts"
 
   ALWAYS use the appropriate tool for each request. Never make up prices or data.
-  
-  Always provide clear, accurate information with current prices and percentage changes. If you don't know the answer, say "I don't know" and ask more questions instead of making up information.
-  Format prices nicely with currency symbols and highlight significant changes.
-  Be helpful and explain market movements when relevant but don't give financial advices.
 
-  For portfolio calculations, if the user does not specify the wallet address or chain then ask users to provide their wallet address and the chain they are using (like Ethereum, BSC, etc.).
-  If the chain is not supported, inform them that you can only track Ethereum, Solana & BSC wallets at the moment. The "total_value" is the field which specifes the portfolio in USD. After that you can analyse the portfolio and provide insights like:
-  - Top performing assets
-  - Worst performing assets 
-  - Overall portfolio performance
-  - Suggestions for diversification
-  - Any significant changes in holdings
-  
-  You can fetch top gainers, losers, and trending coins for analysing market trends.
-  
-  When users ask for crypto prices, ALWAYS use the cryptocurrency's full name (like 'bitcoin' not 'btc').
-  Common mappings: BTC=bitcoin, ETH=ethereum, SOL=solana, ADA=cardano, DOGE=dogecoin, DOT=polkadot.
-  
-  For conversions, handle requests like:
-  "Convert 5 bitcoin to ethereum" or "Convert 1000 USD to bitcoin"
-  
   Examples:
   - User: "What is the current price of ethereum?" → Use getPriceBySymbol with symbol: "ethereum"
-  - User: "ETH price" → Use getPriceBySymbol with symbol: "ethereum"
-  - User: "Bitcoin price" → Use getPriceBySymbol with symbol: "bitcoin"`,
+  - User: "Track the price of Solana and alert me if it goes down to 145 or goes up to 150" → Use setupPriceAlert with symbol: "solana", low_threshold: 145, high_threshold: 150
+  - User: "Show me my active price alerts" → Use listPriceAlerts
+  - User: "Remove my alert for bitcoin" → Use removePriceAlert (first list alerts to get ID)
+  - User: "Check the status of my price alerts" → Use checkAlertStatus`,
   model,
   tools: {
     getPriceBySymbol,
     comparePrices,
     getTopCryptos,
     getMarketTrends,
-    calculatePortfolio
+    calculatePortfolio,
+    setupPriceAlert,
+    listPriceAlerts,
+    removePriceAlert,
+    checkAlertStatus
   },
 });
