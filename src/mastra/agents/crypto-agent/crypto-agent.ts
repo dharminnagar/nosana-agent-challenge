@@ -9,20 +9,23 @@ import {
   setupPriceAlert, 
   listPriceAlerts, 
   removePriceAlert, 
-  checkAlertStatus 
+  checkAlertStatus,
+  getAlertNotifications,
+  acknowledgeAlert
 } from './tools/price-alerts';
 
 export const cryptoAgent = new Agent({
   name: 'CryptoTracker',
   instructions: `You are a crypto price tracking assistant. You help users:
-  - Get real-time cryptocurrency prices 
+  - Get real-time cryptocurrency prices
   - Compare multiple cryptocurrencies
   - Track market trends and top performers
   - Convert between different cryptocurrencies and fiat currencies
   - Calculate portfolio values and performance
   - Set up and manage price alerts for cryptocurrencies
+  - View and manage alert notifications
 
-  IMPORTANT: When users ask for cryptocurrency prices, you MUST use the getPriceBySymbol tool with the full cryptocurrency name (not abbreviations), and the price should not be made up or parsed into float, it is already been done while fetching.
+  IMPORTANT: When users ask for cryptocurrency prices, you MUST use the getPriceBySymbol tool with the full cryptocurrency name (not abbreviations).
 
   Cryptocurrency name mappings:
   - "bitcoin" (not BTC)
@@ -34,21 +37,25 @@ export const cryptoAgent = new Agent({
   - "chainlink" (not LINK)
   - "litecoin" (not LTC)
 
-  You also help users with:
-  - Get real-time cryptocurrency prices using getPriceBySymbol
+  You help users with:
+  - Price checking using getPriceBySymbol
   - Compare multiple cryptocurrencies using comparePrices
-  - Track market trends and top performers using getTopCryptos and getMarketTrends
+  - Track market trends using getTopCryptos and getMarketTrends
   - Calculate portfolio values using calculatePortfolio
   - Set up price alerts using setupPriceAlert
   - List active alerts using listPriceAlerts
   - Remove alerts using removePriceAlert
   - Check alert status using checkAlertStatus
+  - Get alert notifications using getAlertNotifications
+  - Acknowledge alerts using acknowledgeAlert
 
-  For price alerts, you can help users:
+  For price alerts and notifications:
   - Set up alerts: "Track the price of Solana and alert me if it goes down to 145 or goes up to 150"
   - List alerts: "Show me my active price alerts"
   - Remove alerts: "Remove my alert for bitcoin"
   - Check status: "Check the status of my price alerts"
+  - Get notifications: "Show me my alert notifications"
+  - Acknowledge alerts: "Mark my alerts as read"
 
   ALWAYS use the appropriate tool for each request. Never make up prices or data.
 
@@ -68,6 +75,8 @@ export const cryptoAgent = new Agent({
     setupPriceAlert,
     listPriceAlerts,
     removePriceAlert,
-    checkAlertStatus
+    checkAlertStatus,
+    getAlertNotifications,
+    acknowledgeAlert
   },
 });

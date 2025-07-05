@@ -20,6 +20,30 @@ export const activeAlerts = new Map<string, {
   lastChecked?: Date;
 }>();
 
+// Storage for triggered alerts/notifications
+export const triggeredAlerts = new Map<string, {
+  id: string;
+  alertId: string;
+  symbol: string;
+  message: string;
+  currentPrice: number;
+  thresholdType: 'high' | 'low';
+  thresholdValue: number;
+  triggeredAt: Date;
+  acknowledged: boolean;
+}>();
+
+// Storage for user notifications
+export const userNotifications = new Array<{
+  id: string;
+  type: 'alert' | 'info' | 'warning';
+  title: string;
+  message: string;
+  timestamp: Date;
+  acknowledged: boolean;
+  data?: any;
+}>();
+
 // Setup Price Alert Tool
 export const setupPriceAlert = new Tool({
   id: 'setupPriceAlert',
@@ -340,10 +364,161 @@ class PriceAlertMonitor {
   private triggerAlert(alert: any, message: string, currentPrice: number) {
     console.log(`🚨 ALERT TRIGGERED: ${message}`);
     
-    // In production: send email, push notification, webhook, etc.
+    // Determine threshold type and value
+    let thresholdType: 'high' | 'low' = 'low';
+    let thresholdValue = 0;
+    
+    if (alert.lowThreshold && currentPrice <= alert.lowThreshold) {
+      thresholdType = 'low';
+      thresholdValue = alert.lowThreshold;
+    } else if (alert.highThreshold && currentPrice >= alert.highThreshold) {
+      thresholdType = 'high';
+      thresholdValue = alert.highThreshold;
+    }
+    
+    // Create unique IDs for tracking
+    const triggeredAlertId = `triggered_${alert.id}_${Date.now()}`;
+    const notificationId = `notification_${alert.id}_${Date.now()}`;
+    
+    // Store triggered alert
+    triggeredAlerts.set(triggeredAlertId, {
+      id: triggeredAlertId,
+      alertId: alert.id,
+      symbol: alert.symbol,
+      message,
+      currentPrice,
+      thresholdType,
+      thresholdValue,
+      triggeredAt: new Date(),
+      acknowledged: false,
+    });
+
+    // Add to user notifications - THIS WAS MISSING!
+    userNotifications.push({
+      id: notificationId,
+      type: 'alert',
+      title: `${alert.symbol.toUpperCase()} Price Alert`,
+      message: message,
+      timestamp: new Date(),
+      acknowledged: false,
+      data: {
+        alertId: alert.id,
+        symbol: alert.symbol,
+        currentPrice,
+        thresholdType,
+        thresholdValue,
+        triggeredAlertId,
+      },
+    });
+
+    console.log(`📢 Notification stored: ${notificationId}`);
+    console.log(`📊 Total notifications: ${userNotifications.length}`);
+    
+    // Optional: Remove alert after triggering (or keep for repeated alerts)
+    // activeAlerts.delete(alert.id);
   }
 }
 
 // Create and start the monitor
 export const priceAlertMonitor = new PriceAlertMonitor();
 priceAlertMonitor.start();
+
+// Add to src/mastra/agents/crypto-agent/tools/price-alerts.ts
+
+export const getAlertNotifications = new Tool({
+  id: 'getAlertNotifications',
+  description: 'Get all triggered alerts and notifications for the user',
+  inputSchema: z.object({
+    unacknowledged_only: z.boolean().default(false).describe('Only show unacknowledged alerts'),
+  }),
+  outputSchema: z.object({
+    notifications: z.array(z.object({
+      id: z.string(),
+      type: z.string(),
+      title: z.string(),
+      message: z.string(),
+      timestamp: z.string(),
+      acknowledged: z.boolean(),
+      data: z.any().optional(),
+    })),
+    total_count: z.number(),
+    unacknowledged_count: z.number(),
+  }),
+  execute: async ({ context }) => {
+    const { unacknowledged_only } = context;
+    
+    try {
+      let notifications = [...userNotifications];
+      
+      if (unacknowledged_only) {
+        notifications = notifications.filter(n => !n.acknowledged);
+      }
+      
+      const formattedNotifications = notifications.map(notification => ({
+        id: notification.id,
+        type: notification.type,
+        title: notification.title,
+        message: notification.message,
+        timestamp: notification.timestamp.toISOString(),
+        acknowledged: notification.acknowledged,
+        data: notification.data,
+      }));
+
+      console.log(`📢 Retrieved ${formattedNotifications.length} notifications`);
+      
+      return {
+        notifications: formattedNotifications,
+        total_count: userNotifications.length,
+        unacknowledged_count: userNotifications.filter(n => !n.acknowledged).length,
+      };
+    } catch (error) {
+      console.error('Error getting alert notifications:', error);
+      return {
+        notifications: [],
+        total_count: 0,
+        unacknowledged_count: 0,
+      };
+    }
+  },
+});
+
+export const acknowledgeAlert = new Tool({
+  id: 'acknowledgeAlert',
+  description: 'Mark an alert notification as acknowledged/read',
+  inputSchema: z.object({
+    notification_id: z.string().describe('The notification ID to acknowledge'),
+  }),
+  outputSchema: z.object({
+    success: z.boolean(),
+    message: z.string(),
+  }),
+  execute: async ({ context }) => {
+    const { notification_id } = context;
+    
+    try {
+      const notification = userNotifications.find(n => n.id === notification_id);
+      
+      if (!notification) {
+        return {
+          success: false,
+          message: `Notification with ID ${notification_id} not found`,
+        };
+      }
+      
+      notification.acknowledged = true;
+      
+      console.log(`✅ Acknowledged notification: ${notification_id}`);
+      
+      return {
+        success: true,
+        message: 'Notification acknowledged successfully',
+      };
+    } catch (error: any) {
+      console.error('Error acknowledging alert:', error);
+      return {
+        success: false,
+        message: `Failed to acknowledge alert: ${error.message}`,
+      };
+    }
+  },
+});
