@@ -5,7 +5,7 @@ const portfolioSchema = z.object({
   wallet_address: z.string()
     .min(26, 'Invalid wallet address length')
     .regex(/^[a-zA-Z0-9]+$/, 'Invalid wallet address format').describe("Wallet Address: Must be a valid blockchain address"),
-  blockchain: z.enum(['ethereum', 'solana', 'polygon', 'bsc'])
+  blockchain: z.string()
     .default('ethereum'),
 });
 
