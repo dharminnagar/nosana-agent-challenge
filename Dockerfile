@@ -31,6 +31,9 @@ COPY . .
 # Build the project
 RUN pnpm run build
 
+# Expose the API port
+EXPOSE 8080
+
 # Override the default entrypoint
 ENTRYPOINT ["/bin/sh", "-c"]
 
