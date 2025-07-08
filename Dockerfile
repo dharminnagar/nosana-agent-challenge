@@ -35,4 +35,4 @@ RUN pnpm run build
 ENTRYPOINT ["/bin/sh", "-c"]
 
 # Then pass your full script in CMD
-CMD ["ollama serve & sleep 5 && ollama pull ${MODEL_NAME_AT_ENDPOINT} && pnpm run start"]
+CMD ["ollama serve & sleep 5 && ollama pull ${MODEL_NAME_AT_ENDPOINT} && node .mastra/output/index.mjs"]
