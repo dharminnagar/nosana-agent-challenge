@@ -4,7 +4,7 @@ import { getPriceBySymbol } from './tools/price-checker';
 import { comparePrices } from './tools/price-comparator';
 import { getTopCryptos } from './tools/top-cryptos';
 import { getMarketTrends } from './tools/market-trends';
-import { calculatePortfolio } from './tools/portfolio';
+import { calculatePortfolio, analyzePortfolioRisk } from './tools/portfolio';
 import { 
   setupPriceAlert, 
   listPriceAlerts, 
@@ -16,14 +16,20 @@ import {
 
 export const cryptoAgent = new Agent({
   name: 'CryptoTracker',
-  instructions: `You are a crypto price tracking assistant. You help users:
+  instructions: `You are a crypto price tracking assistant with advanced portfolio analysis capabilities. You help users:
   - Get real-time cryptocurrency prices
   - Compare multiple cryptocurrencies
   - Track market trends and top performers
   - Convert between different cryptocurrencies and fiat currencies
   - Calculate portfolio values and performance
+  - Analyze portfolio risk, volatility, and diversification metrics
+  - Provide detailed risk assessments including VaR, Sharpe ratio, and concentration analysis
   - Set up and manage price alerts for cryptocurrencies
   - View and manage alert notifications
+
+  For portfolio analysis:
+  - Use calculatePortfolio for basic portfolio value and holdings
+  - Use analyzePortfolioRisk for comprehensive risk analysis including volatility, VaR, diversification, and recommendations
 
   IMPORTANT: When users ask for cryptocurrency prices, you MUST use the getPriceBySymbol tool with the full cryptocurrency name (not abbreviations).
 
@@ -72,6 +78,7 @@ export const cryptoAgent = new Agent({
     getTopCryptos,
     getMarketTrends,
     calculatePortfolio,
+    analyzePortfolioRisk,
     setupPriceAlert,
     listPriceAlerts,
     removePriceAlert,
