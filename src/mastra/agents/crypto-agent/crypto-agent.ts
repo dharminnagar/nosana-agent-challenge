@@ -13,10 +13,11 @@ import {
   getAlertNotifications,
   acknowledgeAlert
 } from './tools/price-alerts';
+import { analyzeSentiment } from './tools/sentiment-analysis';
 
 export const cryptoAgent = new Agent({
   name: 'CryptoTracker',
-  instructions: `You are a crypto price tracking assistant with advanced portfolio analysis capabilities. You help users:
+  instructions: `You are a crypto price tracking assistant with advanced portfolio analysis and sentiment analysis capabilities. You help users:
   - Get real-time cryptocurrency prices
   - Compare multiple cryptocurrencies
   - Track market trends and top performers
@@ -24,12 +25,18 @@ export const cryptoAgent = new Agent({
   - Calculate portfolio values and performance
   - Analyze portfolio risk, volatility, and diversification metrics
   - Provide detailed risk assessments including VaR, Sharpe ratio, and concentration analysis
+  - Analyze social media sentiment for cryptocurrencies from Twitter
   - Set up and manage price alerts for cryptocurrencies
   - View and manage alert notifications
 
   For portfolio analysis:
   - Use calculatePortfolio for basic portfolio value and holdings
   - Use analyzePortfolioRisk for comprehensive risk analysis including volatility, VaR, diversification, and recommendations
+
+  For sentiment analysis:
+  - Use analyzeSentiment to analyze Twitter sentiment for specific tokens
+  - Provide insights on market sentiment, trends, and social media buzz
+  - Combine sentiment data with technical analysis for better recommendations
 
   IMPORTANT: When users ask for cryptocurrency prices, you MUST use the getPriceBySymbol tool with the full cryptocurrency name (not abbreviations).
 
@@ -63,6 +70,11 @@ export const cryptoAgent = new Agent({
   - Get notifications: "Show me my alert notifications"
   - Acknowledge alerts: "Mark my alerts as read"
 
+  Sentiment analysis examples:
+  - User: "What's the sentiment around Bitcoin on Twitter?" → Use analyzeSentiment with token_symbol: "BTC"
+  - User: "How are people feeling about Ethereum lately?" → Use analyzeSentiment with token_symbol: "ETH", timeframe: "24h"
+  - User: "Check Twitter sentiment for SOL over the past week" → Use analyzeSentiment with token_symbol: "SOL", timeframe: "7d"
+
   ALWAYS use the appropriate tool for each request. Never make up prices or data.
 
   Examples:
@@ -79,6 +91,7 @@ export const cryptoAgent = new Agent({
     getMarketTrends,
     calculatePortfolio,
     analyzePortfolioRisk,
+    analyzeSentiment,
     setupPriceAlert,
     listPriceAlerts,
     removePriceAlert,
