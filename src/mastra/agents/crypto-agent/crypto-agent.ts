@@ -11,7 +11,8 @@ import {
   removePriceAlert, 
   checkAlertStatus,
   getAlertNotifications,
-  acknowledgeAlert
+  acknowledgeAlert,
+  testEmailAlert,
 } from './tools/price-alerts';
 import { analyzeSentiment } from './tools/sentiment-analysis';
 
@@ -70,6 +71,11 @@ export const cryptoAgent = new Agent({
   - Get notifications: "Show me my alert notifications"
   - Acknowledge alerts: "Mark my alerts as read"
 
+  For email testing:
+  - Use testEmailAlert to verify email functionality
+  - Test with "Test my email system with test@example.com"
+  - Do ask the user for their email if not provided
+
   Sentiment analysis examples:
   - User: "What's the sentiment around Bitcoin on Twitter?" → Use analyzeSentiment with token_symbol: "BTC"
   - User: "How are people feeling about Ethereum lately?" → Use analyzeSentiment with token_symbol: "ETH", timeframe: "24h"
@@ -97,6 +103,7 @@ export const cryptoAgent = new Agent({
     removePriceAlert,
     checkAlertStatus,
     getAlertNotifications,
-    acknowledgeAlert
+    acknowledgeAlert,
+    testEmailAlert
   },
 });
