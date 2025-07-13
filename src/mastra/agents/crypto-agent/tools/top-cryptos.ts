@@ -6,7 +6,6 @@ const topCryptosSchema = z.object({
   sort_by: z.enum(['market_cap', 'volume', 'price_change_24h']).default('market_cap').describe('Sort criteria'),
 });
 
-// Rate limiter helper
 class RateLimiter {
   private lastCall: number = 0;
   private readonly minInterval: number = 6000; // 6 seconds between calls
@@ -27,7 +26,6 @@ class RateLimiter {
 
 const rateLimiter = new RateLimiter();
 
-// Simple fetch with timeout - NO RETRY
 async function fetchWithTimeout(url: string, timeout: number = 10000): Promise<Response> {
   await rateLimiter.wait();
   
@@ -92,12 +90,10 @@ export const getTopCryptos = new Tool({
     } catch (error: any) {
       console.error('Error fetching top cryptocurrencies:', error);
       
-      // RETURN a single error item instead of throwing
       const errorMessage = error.message.includes('429') || error.message.includes('Rate limited')
         ? 'I apologize, but I cannot fetch the current cryptocurrency data due to API rate limits. Please try again in a few minutes.'
         : 'I apologize, but I cannot fetch the current cryptocurrency data due to API issues. Please try again later.';
       
-      // Return an array with a single error item that matches the schema
       return [{
         name: 'Error',
         symbol: 'ERROR',

@@ -1,13 +1,10 @@
-// src/mastra/agents/crypto-agent/tools/price-alerts.ts
 import { z } from 'zod';
 import { Tool } from '@mastra/core/tools';
 import { Resend } from 'resend';
 
-// Single Resend instance following the official pattern
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Optimized Email Service
-class OptimizedEmailService {
+class EmailService {
   constructor() {
     if (!process.env.RESEND_API_KEY) {
       console.warn('⚠️ RESEND_API_KEY not found in environment variables');
@@ -216,7 +213,7 @@ Powered by Resend
 }
 
 // Create single instance
-const emailService = new OptimizedEmailService();
+const emailService = new EmailService();
 
 // Test Email Alert Tool
 export const testEmailAlert = new Tool({
@@ -377,7 +374,6 @@ export const setupPriceAlert = new Tool({
         throw new Error(`Price data not found for ${symbol}. Please check the symbol.`);
       }
 
-      // Store alert with triggered status
       activeAlerts.set(alertId, {
         id: alertId,
         symbol,
@@ -386,7 +382,7 @@ export const setupPriceAlert = new Tool({
         currentPrice,
         userEmail: user_email,
         createdAt: new Date(),
-        triggered: false, // NEW: Initialize as not triggered
+        triggered: false,
       });
 
       const emailStatus = user_email ? "enabled" : "disabled";

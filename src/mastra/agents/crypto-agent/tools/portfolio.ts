@@ -67,7 +67,6 @@ export const analyzePortfolioRisk = new Tool({
     const { wallet_address, blockchain, confidence_level } = context;
 
     try {
-      // Get portfolio data by calling the portfolio calculation logic directly
       const portfolioData = await getPortfolioData(wallet_address, blockchain);
       
       if (portfolioData.holdings.length === 0) {
@@ -100,7 +99,6 @@ export const analyzePortfolioRisk = new Tool({
   },
 });
 
-// Extract the portfolio calculation logic into a separate function
 async function getPortfolioData(wallet_address: string, blockchain: string) {
   try {
     let holdings: any[] = [];
@@ -128,7 +126,6 @@ async function getPortfolioData(wallet_address: string, blockchain: string) {
       };
     }
 
-    // Get prices for all tokens using Moralis
     console.error(`Fetching prices for ${holdings.length} holdings on ${blockchain}...`);
     const priceData = await getMoralisTokenPrices(holdings, blockchain);
 
@@ -223,7 +220,6 @@ export const calculatePortfolio = new Tool({
   },
 });
 
-// Helper function to get Ethereum holdings using Moralis
 async function getEthereumHoldings(walletAddress: string) {
   try {
     const MORALIS_API_KEY = process.env.MORALIS_API_KEY;

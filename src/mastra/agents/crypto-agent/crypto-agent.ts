@@ -14,7 +14,6 @@ import {
   acknowledgeAlert,
   testEmailAlert,
 } from './tools/price-alerts';
-import { analyzeSentiment } from './tools/sentiment-analysis';
 
 export const cryptoAgent = new Agent({
   name: 'CryptoTracker',
@@ -100,7 +99,6 @@ export const cryptoAgent = new Agent({
     getMarketTrends,
     calculatePortfolio,
     analyzePortfolioRisk,
-    analyzeSentiment,
     setupPriceAlert,
     listPriceAlerts,
     removePriceAlert,
