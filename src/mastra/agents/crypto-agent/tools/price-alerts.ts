@@ -2,15 +2,22 @@ import { z } from 'zod';
 import { Tool } from '@mastra/core/tools';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend: Resend | null = null;
 
+function getResendClient(): Resend {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is not set. Please set it in your environment variables.");
+  }
+  
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  
+  return resend;
+}
 class EmailService {
   constructor() {
-    if (!process.env.RESEND_API_KEY) {
-      console.warn('⚠️ RESEND_API_KEY not found in environment variables');
-      console.log('📝 Please set RESEND_API_KEY in your .env file');
-      console.log('🔗 Get your API key from: https://resend.com/api-keys');
-    }
+    getResendClient();
   }
 
   async sendPriceAlert(
@@ -27,6 +34,7 @@ class EmailService {
     }
 
     try {
+      const resend = getResendClient();
       const emoji = thresholdType === 'high' ? '🔺' : '🔻';
       const direction = thresholdType === 'high' ? 'risen above' : 'dropped below';
       const subject = `${emoji} ${symbol.toUpperCase()} Price Alert - $${currentPrice.toLocaleString()}`;
@@ -64,7 +72,7 @@ class EmailService {
     }
 
     try {
-      // Following the exact pattern from resend-node-example/index.ts
+      const resend = getResendClient();
       const { data, error } = await resend.emails.send({
         from: 'Crypto Alerts <onboarding@resend.dev>',
         to: [testEmail],
@@ -212,10 +220,8 @@ Powered by Resend
   }
 }
 
-// Create single instance
 const emailService = new EmailService();
 
-// Test Email Alert Tool
 export const testEmailAlert = new Tool({
   id: 'testEmailAlert',
   description: 'Test the email alert system by sending a test email using Resend',
@@ -233,7 +239,6 @@ export const testEmailAlert = new Tool({
     try {
       console.log(`🧪 Testing email system with address: ${test_email}`);
       
-      // Test connection first
       const connectionTest = await emailService.testConnection(test_email);
       
       if (!connectionTest) {
@@ -243,7 +248,6 @@ export const testEmailAlert = new Tool({
         };
       }
 
-      // Test actual price alert email
       const alertTest = await emailService.sendPriceAlert(
         test_email,
         'bitcoin',
@@ -277,7 +281,6 @@ const alertSchema = z.object({
   user_email: z.string().email().optional().describe('Email address to send alerts to'),
 });
 
-// Enhanced alert storage with email and triggered status
 export const activeAlerts = new Map<string, {
   id: string;
   symbol: string;
@@ -287,11 +290,10 @@ export const activeAlerts = new Map<string, {
   userEmail?: string;
   createdAt: Date;
   lastChecked?: Date;
-  triggered: boolean; // NEW: Track if alert has been triggered
-  triggeredAt?: Date; // NEW: When it was triggered
+  triggered: boolean; 
+  triggeredAt?: Date; 
 }>();
 
-// Storage for triggered alerts/notifications
 export const triggeredAlerts = new Map<string, {
   id: string;
   alertId: string;
@@ -302,10 +304,9 @@ export const triggeredAlerts = new Map<string, {
   thresholdValue: number;
   triggeredAt: Date;
   acknowledged: boolean;
-  emailSent: boolean; // NEW: Track if email was sent
+  emailSent: boolean; 
 }>();
 
-// Storage for user notifications
 export const userNotifications = new Array<{
   id: string;
   type: 'alert' | 'info' | 'warning';
@@ -316,7 +317,6 @@ export const userNotifications = new Array<{
   data?: any;
 }>();
 
-// Setup Price Alert Tool - Updated with email support
 export const setupPriceAlert = new Tool({
   id: 'setupPriceAlert',
   description: 'Set up price alerts for cryptocurrencies with email notifications',
@@ -412,7 +412,6 @@ export const setupPriceAlert = new Tool({
   },
 });
 
-// List Price Alerts Tool - Updated to show triggered status
 export const listPriceAlerts = new Tool({
   id: 'listPriceAlerts',
   description: 'List all active price alerts',
@@ -668,9 +667,8 @@ export const checkAlertStatus = new Tool({
   },
 });
 
-// Updated Price Alert Monitor Class
 class PriceAlertMonitor {
-  public isRunning = false; // Make this public so checkAlertStatus can access it
+  public isRunning = false;
   private intervalId: NodeJS.Timeout | null = null;
   private readonly checkInterval = 30000; // 30 seconds
 
