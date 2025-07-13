@@ -64,6 +64,9 @@ export const cryptoAgent = new Agent({
   - Acknowledge alerts using acknowledgeAlert
 
   For price alerts and notifications:
+  - We have a threshold system for price alerts
+  - Low threshold means alert when price goes below this value
+  - High threshold means alert when price goes above this value
   - Set up alerts: "Track the price of Solana and alert me if it goes down to 145 or goes up to 150"
   - List alerts: "Show me my active price alerts"
   - Remove alerts: "Remove my alert for bitcoin"

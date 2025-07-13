@@ -347,6 +347,19 @@ export const setupPriceAlert = new Tool({
         throw new Error('Low threshold must be less than high threshold');
       }
 
+      if(!user_email || user_email.trim() === '' || user_email === "example@example.com") {
+        console.warn('⚠️ Invalid or missing user email.');
+        return {
+          success: false,
+          message: 'Invalid or missing user email. Please provide a valid email address.',
+          alert_id: '',
+          symbol,
+          low_threshold,
+          high_threshold,
+          email_enabled: false,
+        }
+      }
+
       const alertId = `${symbol}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
       const currentPriceResponse = await fetch(
@@ -707,7 +720,18 @@ class PriceAlertMonitor {
     }
   }
 
-  private async checkSingleAlert(alert: any) {
+  private async checkSingleAlert(alert: {
+    id: string;
+    symbol: string;
+    lowThreshold?: number;
+    highThreshold?: number;
+    currentPrice?: number;
+    userEmail?: string;
+    createdAt: Date;
+    lastChecked?: Date;
+    triggered: boolean; // Track if alert has been triggered
+    triggeredAt?: Date; // When it was triggered
+  }) {
     const response = await fetch(
       `https://api.coingecko.com/api/v3/simple/price?ids=${alert.symbol}&vs_currencies=usd`
     );
