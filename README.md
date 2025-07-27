@@ -2,336 +2,358 @@
 
 ![Agent-101](./assets/NosanaBuildersChallengeAgents.jpg)
 
-## Topic
+## Agent Description: CryptoTracker AI Agent
 
-Nosana Builders Challenge, 2nd edition
-Agent-101: Build your first agent
+**CryptoTracker** is an advanced cryptocurrency analysis and portfolio management AI agent that provides comprehensive crypto market insights, risk analysis, sentiment tracking, and automated price alerts with email notifications.
 
-## Description
+### Key Features
 
-The main goal of this `Nosana Builders Challenge` to teach participants to build and deploy agents. This first step will be in running a basic AI agent and giving it some basic functionality. Participants will add a tool, for the tool calling capabilities of the agent. These are basically some TypeScript functions, that will, for example, retrieve some data from a weather API, post a tweet via an API call, etc.
+🔍 **Real-time Price Tracking**
+- Live cryptocurrency price monitoring
+- Multi-crypto price comparisons
+- Market trend analysis and top performer tracking
 
-## [Mastra](https://github.com/mastra-ai/mastra)
+📊 **Advanced Portfolio Analytics**
+- Complete portfolio valuation across multiple blockchains
+- Risk assessment with VaR, Sharpe ratio, and volatility metrics
+- Diversification analysis and concentration risk evaluation
+- Personalized investment recommendations
 
-For this challenge we will be using Mastra to build our tool.
+💭 **Social Sentiment Analysis**
+- Twitter sentiment analysis for cryptocurrencies
+- Market sentiment trends and social media buzz tracking
+- Sentiment-based trading recommendations
 
-> Mastra is an opinionated TypeScript framework that helps you build AI applications and features quickly. It gives you the set of primitives you need: workflows, agents, RAG, integrations, and evals. You can run Mastra on your local machine, or deploy to a serverless cloud.
+🚨 **Smart Price Alerts**
+- Automated price threshold monitoring
+- Email notifications via Resend API
+- One-time trigger system to prevent spam
+- Comprehensive alert management and history
 
-### Required Reading
+🔗 **Multi-Blockchain Support**
+- Ethereum, BSC, Polygon wallet analysis
+- Cross-chain portfolio aggregation
+- Blockchain-specific risk metrics
 
-We recommend reading the following sections to get started with how to create an Agent and how to implement Tool Calling.
+## Technology Stack
 
-- <https://mastra.ai/en/docs/agents/overview>
-- [Mastra Guide: Build an AI stock agent](https://mastra.ai/en/guides/guide/stock-agent)
+- **Framework**: [Mastra](https://mastra.ai) - TypeScript AI agent framework
+- **LLM**: Qwen 2.5 (1.5b for development, 32b for production)
+- **Email Service**: [Resend](https://resend.com) for reliable email delivery
+- **APIs**: CoinGecko API for cryptocurrency data
+- **Deployment**: Docker + Nosana distributed computing network
 
 ## Get Started
 
-To get started run the following command to start developing:
-We recommend using [pnpm](https://pnpm.io/installation), but you can try npm, or bun if you prefer.
+### Prerequisites
 
-```sh
+- [Node.js](https://nodejs.org/) (>=20.9.0)
+- [pnpm](https://pnpm.io/installation) (recommended) or npm
+- [Docker](https://docs.docker.com/get-docker/) for containerization
+- [Ollama](https://ollama.com/download) for local LLM (optional)
+
+### Local Development Setup
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/yourusername/agent-challenge.git
+cd agent-challenge
+```
+
+2. **Install dependencies**
+```bash
 pnpm install
+```
+
+3. **Configure environment variables**
+```bash
+cp .env.example .env
+# Edit .env with your actual API keys
+```
+
+4. **Start development server**
+```bash
 pnpm run dev
 ```
 
-## Assignment
+5. **Access the agent**
+Navigate to `http://localhost:3000` in your browser
 
-### Challenge Overview
+### Environment Variables
 
-Welcome to the Nosana AI Agent Hackathon! Your mission is to build and deploy an AI agent on Nosana.
-While we provide a weather agent as an example, your creativity is the limit. Build agents that:
+Create a `.env` file with the following variables:
 
-**Beginner Level:**
+```bash
+# Required: Resend API for email notifications
+RESEND_API_KEY=re_your_resend_api_key_here
 
-- **Simple Calculator**: Perform basic math operations with explanations
-- **Todo List Manager**: Help users track their daily tasks
+# Application Configuration
+NODE_ENV=development
+PORT=3000
+LOG_LEVEL=info
 
-**Intermediate Level:**
+# Optional: Enhanced API access
+COINGECKO_API_KEY=your_coingecko_pro_key_here
 
-- **News Summarizer**: Fetch and summarize latest news articles
-- **Crypto Price Checker**: Monitor cryptocurrency prices and changes
-- **GitHub Stats Reporter**: Fetch repository statistics and insights
-
-**Advanced Level:**
-
-- **Blockchain Monitor**: Track and alert on blockchain activities
-- **Trading Strategy Bot**: Automate simple trading strategies
-- **Deploy Manager**: Deploy and manage applications on Nosana
-
-Or any other innovative AI agent idea at your skill level!
-
-### Getting Started
-
-1. **Fork the [Nosana Agent Challenge](https://github.com/nosana-ai/agent-challenge)** to your GitHub account
-2. **Clone your fork** locally
-3. **Install dependencies** with `pnpm install`
-4. **Run the development server** with `pnpm run dev`
-5. **Build your agent** using the Mastra framework
-
-### How to build your Agent
-
-Here we will describe the steps needed to build an agent.
-
-#### Folder Structure
-
-Provided in this repo, there is the `Weather Agent`.
-This is a fully working agent that allows a user to chat with an LLM, and fetches real time weather data for the provided location.
-
-There are two main folders we need to pay attention to:
-
-- [src/mastra/agents/weather-agent/](./src/mastra/agents/weather-agent/)
-- [src/mastra/agents/your-agents/](./src/mastra/agents/your-agent/)
-
-In `src/mastra/agents/weather-agent/` you will find a complete example of a working agent. Complete with Agent definition, API calls, interface definition, basically everything needed to get a full fledged working agent up and running.
-In `src/mastra/agents/your-agents/` you will find a bare bones example of the needed components, and imports to get started building your agent, we recommend you rename this folder, and it's files to get started.
-
-Rename these files to represent the purpose of your agent and tools. You can use the [Weather Agent Example](#example:_weather_agent) as a guide until you are done with it, and then you can delete these files before submitting your final submission.
-
-As a bonus, for the ambitious ones, we have also provided the [src/mastra/agents/weather-agent/weather-workflow.ts](./src/mastra/agents/weather-agent/weather-workflow.ts) file as an example. This file contains an example of how you can chain agents and tools to create a workflow, in this case, the user provides their location, and the agent retrieves the weather for the specified location, and suggests an itinerary.
-
-### LLM-Endpoint
-
-Agents depend on an LLM to be able to do their work.
-
-#### Nosana Endpoint
-
-You can use the following endpoint and model for testing, if you wish:
-
-```
+# LLM Configuration (for local Ollama)
 MODEL_NAME_AT_ENDPOINT=qwen2.5:1.5b
-API_BASE_URL= https://dashboard.nosana.com/jobs/GPVMUckqjKR6FwqnxDeDRqbn34BH7gAa5xWnWuNH1drf
+API_BASE_URL=http://127.0.0.1:11434/api
 ```
 
-#### Running Your Own LLM with Ollama
+### Local LLM Setup (Optional)
 
-The default configuration uses a local [Ollama](https://ollama.com) LLM.
-For local development or if you prefer to use your own LLM, you can use [Ollama](https://ollama.ai) to serve the lightweight `qwen2.5:1.5b` mode.
+If you prefer to run your own LLM locally:
 
-**Installation & Setup:**
+1. **Install Ollama**
+```bash
+# macOS
+brew install ollama
 
-1. **[ Install Ollama ](https://ollama.com/download)**:
+# Or download from https://ollama.com/download
+```
 
-2. **Start Ollama service**:
-
+2. **Start Ollama and pull the model**
 ```bash
 ollama serve
-```
-
-3. **Pull and run the `qwen2.5:1.5b` model**:
-
-```bash
 ollama pull qwen2.5:1.5b
-ollama run qwen2.5:1.5b
 ```
 
-4. **Update your `.env` file**
+## Usage Examples
 
-There are two predefined environments defined in the `.env` file. One for local development and another, with a larger model, `qwen2.5:32b`, for more complex use cases.
+### Basic Price Checking
+```
+"What is the current price of bitcoin?"
+"Compare ethereum and solana prices"
+"Show me the top 10 cryptocurrencies"
+```
 
-**Why `qwen2.5:1.5b`?**
+### Portfolio Analysis
+```
+"Analyze the portfolio for wallet 0x1234...5678 on ethereum"
+"What's the risk assessment for my crypto holdings?"
+"Calculate portfolio diversification metrics"
+```
 
-- Lightweight (only ~1GB)
-- Fast inference on CPU
-- Supports tool calling
-- Great for development and testing
+### Price Alerts
+```
+"Set up a bitcoin alert at $50000 and email me at john@example.com"
+"Track ethereum price and alert me if it goes above $4000"
+"Show me my active price alerts"
+```
 
-Do note `qwen2.5:1.5b` is not suited for complex tasks.
+### Sentiment Analysis
+```
+"What's the Twitter sentiment for Bitcoin?"
+"Analyze social media buzz around Solana for the past week"
+"How are people feeling about Ethereum lately?"
+```
 
-The Ollama server will run on `http://localhost:11434` by default and is compatible with the OpenAI API format that Mastra expects.
+### Email Testing
+```
+"Test my email system with test@example.com"
+"Verify email alerts are working"
+```
 
-### Testing your Agent
+## Docker Deployment
 
-You can read the [Mastra Documentation: Playground](https://mastra.ai/en/docs/local-dev/mastra-dev) to learn more on how to test your agent locally.
-Before deploying your agent to Nosana, it's crucial to thoroughly test it locally to ensure everything works as expected. Follow these steps to validate your agent:
-
-**Local Testing:**
-
-1. **Start the development server** with `pnpm run dev` and navigate to `http://localhost:8080` in your browser
-2. **Test your agent's conversation flow** by interacting with it through the chat interface
-3. **Verify tool functionality** by triggering scenarios that call your custom tools
-4. **Check error handling** by providing invalid inputs or testing edge cases
-5. **Monitor the console logs** to ensure there are no runtime errors or warnings
-
-**Docker Testing:**
-After building your Docker container, test it locally before pushing to the registry:
+### Build and Run Locally
 
 ```bash
-# Build your container
-docker build -t yourusername/agent-challenge:latest .
+# Build the container
+docker build -t yourusername/cryptotracker-agent:latest .
 
-# Run it locally with environment variables
-docker run -p 8080:8080 --env-file .env yourusername/agent-challenge:latest
+# Run with environment variables
+docker run -p 3000:3000 --env-file .env yourusername/cryptotracker-agent:latest
 
-# Test the containerized agent at http://localhost:8080
+# Test the containerized agent
+curl http://localhost:3000/health
 ```
 
-Ensure your agent responds correctly and all tools function properly within the containerized environment. This step is critical as the Nosana deployment will use this exact container.
+### Docker Compose (Recommended)
 
-### Submission Requirements
+```bash
+# Setup environment
+cp .env.example .env
+# Edit .env with your API keys
 
-#### 1. Code Development
+# Start all services
+docker-compose up --build -d
 
-- Fork this repository and develop your AI agent
-- Your agent must include at least one custom tool (function)
-- Code must be well-documented and include clear setup instructions
-- Include environment variable examples in a `.env.example` file
+# View logs
+docker-compose logs -f crypto-agent
 
-#### 2. Docker Container
+# Stop services
+docker-compose down
+```
 
-- Create a `Dockerfile` for your agent
-- Build and push your container to Docker Hub or GitHub Container Registry
-- Container must be publicly accessible
-- Include the container URL in your submission
+### Publish to Docker Hub
 
-##### Build, Run, Publish
-
-Note: You'll need an account on [Dockerhub](https://hub.docker.com/)
-
-```sh
-
-# Build and tag
-docker build -t yourusername/agent-challenge:latest .
-
-# Run the container locally
-docker run -p 8080:8080 yourusername/agent-challenge:latest
-
-# Login
+```bash
+# Login to Docker Hub
 docker login
 
-# Push
-docker push yourusername/agent-challenge:latest
+# Build and tag
+docker build -t yourusername/cryptotracker-agent:latest .
+
+# Push to registry
+docker push yourusername/cryptotracker-agent:latest
 ```
 
-#### 3. Nosana Deployment
+## Nosana Deployment
 
-- Deploy your Docker container on Nosana
-- Your agent must successfully run on the Nosana network
-- Include the Nosana job ID or deployment link
+### Option A: Using Nosana CLI
 
-##### Nosana Job Definition
+1. **Install Nosana CLI**
+```bash
+npm install -g @nosana/cli
+```
 
-We have included a Nosana job definition at <./nos_job_def/nosana_mastra.json>, that you can use to publish your agent to the Nosana network.
+2. **Update job definition**
+Edit `./nos_job_def/nosana_mastra.json` with your Docker image:
+```json
+{
+  "image": "docker.io/yourusername/cryptotracker-agent:latest"
+}
+```
 
-**A. Deploying using [@nosana/cli](https://github.com/nosana-ci/nosana-cli/)**
+3. **Deploy to Nosana**
+```bash
+# Get wallet address and fund it
+nosana address
 
-- Edit the file and add in your published docker image to the `image` property. `"image": "docker.io/yourusername/agent-challenge:latest"`
-- Download and install the [@nosana/cli](https://github.com/nosana-ci/nosana-cli/)
-- Load your wallet with some funds
-  - Retrieve your address with: `nosana address`
-  - Go to our [Discord](https://nosana.com/discord) and ask for some NOS and SOL to publish your job.
-- Run: `nosana job post --file nosana_mastra.json --market nvidia-3060 --timeout 30`
-- Go to the [Nosana Dashboard](https://dashboard.nosana.com/deploy) to see your job
+# Deploy your agent
+nosana job post --file ./nos_job_def/nosana_mastra.json --market nvidia-3090 --timeout 30
+```
 
-**B. Deploying using the [Nosana Dashboard](https://dashboard.nosana.com/deploy)**
+### Option B: Using Nosana Dashboard
 
-- Make sure you have https://phantom.com/, installed for your browser.
-- Go to our [Discord](https://nosana.com/discord) and ask for some NOS and SOL to publish your job.
-- Click the `Expand` button, on the [Nosana Dashboard](https://dashboard.nosana.com/deploy)
-- Copy and Paste your edited Nosana Job Definition file into the Textarea
-- Choose an appropriate GPU for the AI model that you are using
-- Click `Deploy`
+1. Go to [Nosana Dashboard](https://dashboard.nosana.com/deploy)
+2. Install [Phantom Wallet](https://phantom.app/)
+3. Fund your wallet (ask in [Nosana Discord](https://nosana.com/discord))
+4. Upload your job definition and deploy
 
-#### 4. Video Demo
+## Project Structure
 
-- Record a 1-3 minute video demonstrating:
-  - Your agent running on Nosana
-  - Key features and functionality
-  - Real-world use case demonstration
-- Upload to YouTube, Loom, or similar platform
+```
+src/mastra/agents/crypto-agent/
+├── crypto-agent.ts          # Main agent definition
+├── tools/
+│   ├── price-checker.ts     # Real-time price fetching
+│   ├── price-comparator.ts  # Multi-crypto comparisons
+│   ├── top-cryptos.ts       # Market leaders tracking
+│   ├── market-trends.ts     # Market analysis
+│   ├── portfolio.ts         # Portfolio & risk analysis
+│   ├── price-alerts.ts      # Alert system with email
+│   └── sentiment-analysis.ts # Twitter sentiment tracking
+└── tests/
+    └── agent.test.ts        # Test suite
+```
 
-#### 5. Documentation
+## Key Tools & Features
 
-- Update this README with:
-  - Agent description and purpose
-  - Setup instructions
-  - Environment variables required
-  - Docker build and run commands
-  - Example usage
+### 1. Price Monitoring Tools
+- **getPriceBySymbol**: Real-time price fetching
+- **comparePrices**: Multi-cryptocurrency comparison
+- **getTopCryptos**: Market leaders analysis
+- **getMarketTrends**: Market trend insights
 
-### Submission Process
+### 2. Portfolio Analysis
+- **calculatePortfolio**: Multi-blockchain portfolio valuation
+- **analyzePortfolioRisk**: Advanced risk metrics (VaR, Sharpe ratio, volatility)
 
-1. **Complete all requirements** listed above
-2. **Commit all of your changes to the `main` branch of your forked repository**
-   - All your code changes
-   - Updated README
-   - Link to your Docker container
-   - Link to your video demo
-   - Nosana deployment proof
-3. **Social Media Post**: Share your submission on X (Twitter)
-   - Tag @nosana_ai
-   - Include a brief description of your agent
-   - Add hashtag #NosanaAgentChallenge
-4. **Finalize your submission on the <https://earn.superteam.fun/agent-challenge> page**
+### 3. Alert System
+- **setupPriceAlert**: Configurable price thresholds
+- **listPriceAlerts**: Active alert management
+- **removePriceAlert**: Alert cleanup
+- **checkAlertStatus**: System monitoring
 
-- Remember to add your forked GitHub repository link
-- Remember to add a link to your X post.
+### 4. Sentiment Analysis
+- **analyzeSentiment**: Twitter sentiment tracking
+- **sentimentTrends**: Social media buzz analysis
 
-### Judging Criteria
+### 5. Email Notifications
+- **testEmailAlert**: Email system verification
+- Automated price alert emails via Resend
+- Beautiful HTML email templates
 
-Submissions will be evaluated based on:
+## Testing
 
-1. **Innovation** (25%)
+### Local Testing
+```bash
+# Start development server
+pnpm run dev
 
-   - Originality of the agent concept
-   - Creative use of AI capabilities
+# Run specific tests
+pnpm test
 
-2. **Technical Implementation** (25%)
+# Test email functionality
+curl -X POST http://localhost:3000/test-email \
+  -H "Content-Type: application/json" \
+  -d '{"email": "test@example.com"}'
+```
 
-   - Code quality and organization
-   - Proper use of the Mastra framework
-   - Efficient tool implementation
+### Docker Testing
+```bash
+# Test container build
+docker build -t test-crypto-agent .
 
-3. **Nosana Integration** (25%)
+# Test container run
+docker run -p 3000:3000 --env-file .env test-crypto-agent
 
-   - Successful deployment on Nosana
-   - Resource efficiency
-   - Stability and performance
+# Health check
+curl http://localhost:3000/health
+```
 
-4. **Real-World Impact** (25%)
-   - Practical use cases
-   - Potential for adoption
-   - Value proposition
+## API Integrations
 
-### Prizes
+- **CoinGecko API**: Real-time cryptocurrency data
+- **Resend API**: Reliable email delivery service
+- **Twitter API**: Social sentiment analysis (configurable)
 
-We’re awarding the **top 10 submissions**:
+## Architecture Highlights
 
-- 🥇 1st: $1,000 USDC
-- 🥈 2nd: $750 USDC
-- 🥉 3rd: $450 USDC
-- 🏅 4th: $200 USDC
-- 🔟 5th–10th: $100 USDC
+- **Modular Design**: Each feature is a separate, testable tool
+- **Type Safety**: Full TypeScript implementation with Zod validation
+- **Error Handling**: Comprehensive error catching and user feedback
+- **Rate Limiting**: Built-in API rate limiting and retry logic
+- **Scalable**: Docker-ready for cloud deployment
 
-All prizes are paid out directly to participants on [SuperTeam](https://superteam.fun)
+## Demo Video
 
-### Resources
+🎥 **[Watch Demo Video](YOUR_VIDEO_LINK_HERE)**
+
+See CryptoTracker in action:
+- Real-time price analysis
+- Portfolio risk assessment
+- Automated email alerts
+- Sentiment analysis features
+
+## Deployment Links
+
+- **Docker Hub**: `docker.io/yourusername/cryptotracker-agent:latest`
+- **Nosana Job ID**: `YOUR_NOSANA_JOB_ID_HERE`
+- **Live Demo**: `YOUR_NOSANA_DEPLOYMENT_URL_HERE`
+
+## Social Media
+
+🐦 **Twitter Post**: [Link to your tweet with #NosanaAgentChallenge](YOUR_TWITTER_LINK)
+
+---
+
+## Resources
 
 - [Nosana Documentation](https://docs.nosana.io)
 - [Mastra Documentation](https://mastra.ai/docs)
-- [Mastra Guide: Build an AI stock agent](https://mastra.ai/en/guides/guide/stock-agent)
-- [Nosana CLI](https://github.com/nosana-ci/nosana-cli)
-- [Docker Documentation](https://docs.docker.com)
+- [Resend API Docs](https://resend.com/docs)
+- [CoinGecko API](https://www.coingecko.com/en/api)
 
-### Support
+## Support
 
-- Join [Nosana Discord](https://nosana.com/discord) for technical support where we have dedicated [Builders Challenge Dev chat](https://discord.com/channels/236263424676331521/1354391113028337664) channel.
-- Follow [@nosana_ai](https://x.com/nosana_ai) for updates.
+- [Nosana Discord](https://nosana.com/discord) - Technical support
+- [Builders Challenge Chat](https://discord.com/channels/236263424676331521/1354391113028337664)
+- Follow [@nosana_ai](https://x.com/nosana_ai) for updates
 
-### Important Notes
+---
 
-- Ensure your agent doesn't expose sensitive data
-- Test thoroughly before submission
-- Keep your Docker images lightweight
-- Document all dependencies clearly
-- Make your code reproducible
-- You can vibe code it if you want 😉
-- **Only one submission per participant**
-- **Submissions that do not compile, and do not meet the specified requirements, will not be considered**
-- **Deadline is: 9 July 2025, 12.01 PM**
-- **Announcement will be announced about one week later, stay tuned for our socials for exact date**
-- **Finalize your submission at [SuperTeam](https://earn.superteam.fun/agent-challenge)**
-
-### Don’t Miss Nosana Builder Challenge Updates
-
-Good luck, builders! We can't wait to see the innovative AI agents you create for the Nosana ecosystem.
-**Happy Building!**
+**Built with ❤️ for the Nosana Builders Challenge**
+*Empowering the future of decentralized AI agents*
